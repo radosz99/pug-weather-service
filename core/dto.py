@@ -11,7 +11,7 @@ class WeatherRequest:
 
 
 class HourWeather:
-    def __init__(self, temp, clouds, wind_speed, rain, desc_1, desc_2, uvi, humidity, icon, snow):
+    def __init__(self, temp, clouds, wind_speed, rain, desc_1, desc_2, uvi, humidity, icon, snow, date):
         self.icon_url = f"http://openweathermap.org/img/wn/{icon}@2x.png"
         self.temp = float(temp)
         self.clouds = clouds
@@ -22,4 +22,5 @@ class HourWeather:
         self.uvi = float(uvi)
         self.humidity = float(humidity)
         self.snow = float(snow)
+        self.date = date
 

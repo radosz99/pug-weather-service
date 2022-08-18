@@ -89,7 +89,7 @@ def retrieve_data_from_forecast(dict_forecast):
         temp = value.get('temp', 0)
         clouds = value.get('clouds', 0)
         wind_speed = value.get('wind_speed', 0)
-        date = value.get('dt', 0)
+        date = key
         try:
             rain = value['rain']['1h']
         except KeyError:
@@ -102,8 +102,8 @@ def retrieve_data_from_forecast(dict_forecast):
         uvi = value.get('uvi', 0)
         humidity = value.get('humidity', 0)
         snow = value.get('snow', 0)
-        hour_forecast = HourWeather(temp, clouds, wind_speed, rain, desc_1, desc_2, uvi, humidity, icon, snow)
-        forecast[date] = hour_forecast.__dict__
+        hour_forecast = HourWeather(temp, clouds, wind_speed, rain, desc_1, desc_2, uvi, humidity, icon, snow, date)
+        forecast[value.get('dt', 0)] = hour_forecast.__dict__
     return forecast
 
 
