@@ -1,9 +1,14 @@
 # Created by https://www.gitignore.io/api/linux,macos,python,pycharm,windows,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=linux,macos,python,pycharm,windows,visualstudiocode
 
-.idea/ 
+# Pycharm shit
+.idea/
+
 ### Linux ###
 *~
+
+# App consts
+core/constants.py
 
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
