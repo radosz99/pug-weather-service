@@ -110,12 +110,6 @@ class TestWeatherMethods(unittest.TestCase):
         forecast = weather_service.get_weather_for_localization_and_time(weather_request)
         self.assertEqual(len(forecast), 5)
 
-    def test_exception_when_end_date_is_too_late(self):
-        start = TestWeatherMethods.get_current_date_with_shift(3)
-        end = TestWeatherMethods.get_current_date_with_shift(80)
-        weather_request = WeatherRequest(lon=10, lat=10, start=start, end=end)
-        self.assertRaises(exc.NotEnoughData, weather_service.get_weather_for_localization_and_time, weather_request)
-
 
 class TestChartCreationMethods(unittest.TestCase):
     @staticmethod
@@ -125,10 +119,9 @@ class TestChartCreationMethods(unittest.TestCase):
         return convert_date_to_unix_timestamp(date + timedelta(hours=shift))
 
     def test_forecast_range(self):
-        start = TestChartCreationMethods.get_current_date_with_shift(3)
-        end = TestChartCreationMethods.get_current_date_with_shift(7)
-        weather_request = WeatherRequest(lon=10, lat=10, start=start, end=end)
+        start = TestChartCreationMethods.get_current_date_with_shift(1)
+        end = TestChartCreationMethods.get_current_date_with_shift(5)
+        weather_request = WeatherRequest(lon=44.50, lat=15.04, start=start, end=end)
         forecast = weather_service.get_weather_for_localization_and_time(weather_request)
-        print(forecast)
-        self.assertEqual(len(forecast), 4)
+        self.assertEqual(len(forecast), 5)
 

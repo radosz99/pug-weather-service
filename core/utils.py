@@ -3,6 +3,8 @@ from time import time, mktime
 from datetime import datetime, timedelta
 import json
 
+from .dto import HourWeather
+
 
 def timer(f):
     @wraps(f)
@@ -56,6 +58,10 @@ def date_to_string(date):
     return date.strftime("%m/%d/%Y, %H:%M")
 
 
+def string_to_date(str_date):
+    return datetime.strptime(str_date, "%m/%d/%Y, %H:%M")
+
+
 def get_index_of_key_in_dictionary(dic, item):
     return list(dic.keys()).index(item)
 
@@ -65,3 +71,39 @@ def verify_index_in_dictionary(list_to_verify, index):
         _ = list(list_to_verify.items())[index]
     except IndexError:
         raise IndexError(f"Index {index} exceeded dictionary length")
+
+
+def get_time_difference_in_hours(date_1, date_2):
+    time_difference = date_2 - date_1
+    return int(time_difference.total_seconds() / 3600)
+
+
+def convert_string_to_json(str_json):
+    str_json = str_json.replace("\'", "\"")
+    return json.loads(str_json)
+
+
+def retrieve_data_from_forecast(dict_forecast):
+    forecast = {}
+    for key, value in dict_forecast.items():
+        temp = value.get('temp', 0)
+        clouds = value.get('clouds', 0)
+        wind_speed = value.get('wind_speed', 0)
+        date = value.get('dt', 0)
+        try:
+            rain = value['rain']['1h']
+        except KeyError:
+            rain = 0
+        weather = str(value['weather'][0])
+        weather = convert_string_to_json(weather)
+        desc_1 = weather['main']
+        desc_2 = weather['description']
+        icon = weather['icon']
+        uvi = value.get('uvi', 0)
+        humidity = value.get('humidity', 0)
+        snow = value.get('snow', 0)
+        hour_forecast = HourWeather(temp, clouds, wind_speed, rain, desc_1, desc_2, uvi, humidity, icon, snow)
+        forecast[date] = hour_forecast.__dict__
+    return forecast
+
+
