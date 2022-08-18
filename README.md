@@ -20,10 +20,16 @@ $ poetry install
 By activating virtualenv:
 ```
 $ poetry shell
-$ uvicorn
+$ uvicorn main:app
+ 
 ```
 
 Or via `poetry run`:
 ```
-$ poetry run uvicorn
+$ poetry run uvicorn main:app
+```
+Or via Docker:
+```
+$ docker build -t pug_weather_service .
+$ docker run -d -p 8120:8120 pug_weather_service
 ```
