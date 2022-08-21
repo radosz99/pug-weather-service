@@ -2,8 +2,11 @@ from functools import wraps
 from time import time, mktime
 from datetime import datetime, timedelta
 import json
+import logging
 
-from .dto import HourForecast
+from .dto import SingleForecast
+
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 
 def timer(f):
@@ -12,7 +15,7 @@ def timer(f):
         ts = time()
         result = f(*args, **kw)
         te = time()
-        print(f"func: {f.__name__} args:[{args}, {kw}] took: {te-ts} sec")
+        logging.info(f"func: {f.__name__} args:[{args}, {kw}] took: {te-ts} sec")
         return result
     return wrap
 
@@ -53,14 +56,19 @@ def load_json_from_file(filename):
 
 def convert_unix_timestamp_to_date_string(timestamp):
     date = convert_unix_timestamp_to_date(timestamp)
-    return convert_date_to_string(date)
+    return convert_date_to_date_string(date)
 
 
-def convert_date_to_string(date):
+def convert_date_string_to_unix_timestamp(date_string):
+    date = convert_date_string_to_date(date_string)
+    return convert_date_to_unix_timestamp(date)
+
+
+def convert_date_to_date_string(date):
     return date.strftime("%m/%d/%Y, %H:%M")
 
 
-def convert_string_to_date(str_date):
+def convert_date_string_to_date(str_date):
     return datetime.strptime(str_date, "%m/%d/%Y, %H:%M")
 
 
@@ -76,7 +84,7 @@ def verify_index_in_dictionary(list_to_verify, index):
 
 
 def get_time_difference_in_hours(date_1, date_2):
-    time_difference = date_2 - date_1
+    time_difference = abs(date_2 - date_1)
     return int(time_difference.total_seconds() / 3600)
 
 
@@ -85,62 +93,62 @@ def convert_string_to_json(str_json):
     return json.loads(str_json)
 
 
-def retrieve_data_from_hourly_forecast(dict_forecast):
-    forecast = {}
-    for key, value in dict_forecast.items():
-        temp = value.get('temp', 0)
-        clouds = value.get('clouds', 0)
-        wind_speed = value.get('wind_speed', 0)
+def retrieve_data_from_hourly_forecast(hourly_forecast):
+    forecast = []
+    for hour_forecast in hourly_forecast:
+        temp = hour_forecast.get('temp', 0)
+        clouds = hour_forecast.get('clouds', 0)
+        wind_speed = hour_forecast.get('wind_speed', 0)
         try:
-            rain = value['rain']['1h']
+            rain = hour_forecast['rain']['1h']
         except KeyError:
             rain = 0
-        weather = str(value['weather'][0])
+        weather = str(hour_forecast['weather'][0])
         weather = convert_string_to_json(weather)
         desc_1 = weather['main']
         desc_2 = weather['description']
         icon = weather['icon']
-        uvi = value.get('uvi', 0)
-        humidity = value.get('humidity', 0)
+        uvi = hour_forecast.get('uvi', 0)
+        humidity = hour_forecast.get('humidity', 0)
         try:
-            snow = value['snow']['1h']
+            snow = hour_forecast['snow']['1h']
         except KeyError:
             snow = 0
-        pop = value.get('pop', 0)
-        unix_timestamp = value.get('dt', 0)
-        date = convert_unix_timestamp_to_date_string(unix_timestamp)
-        hour_forecast = HourForecast(temp, clouds, wind_speed, rain, desc_1, desc_2, uvi, humidity, icon, snow, pop, date)
-        forecast[unix_timestamp] = hour_forecast.__dict__
+        pop = hour_forecast.get('pop', 0)
+        unix_timestamp = hour_forecast.get('dt', 0)
+        hour_forecast = SingleForecast(temp, clouds, wind_speed, rain, desc_1, desc_2, uvi, humidity, icon, snow, pop,
+                                       unix_timestamp)
+        forecast.append(hour_forecast)
     return forecast
 
 
-def retrieve_data_from_every_three_hours_forecast(dict_forecast):
-    forecast = {}
-    for key, value in dict_forecast.items():
-        main = value['main']
+def retrieve_data_from_every_three_hours_forecast(hourly_forecast):
+    forecast = []
+    for hour_forecast in hourly_forecast:
+        main = hour_forecast['main']
         temp = main.get('temp', 0)
-        clouds = value['clouds']['all']
-        wind_speed = value['wind']['speed']
+        clouds = hour_forecast['clouds']['all']
+        wind_speed = hour_forecast['wind']['speed']
         try:
-            rain = value['rain']['3h']
+            rain = hour_forecast['rain']['3h']
         except KeyError:
             rain = 0
-        weather = str(value['weather'][0])
+        weather = str(hour_forecast['weather'][0])
         weather = convert_string_to_json(weather)
         desc_1 = weather['main']
         desc_2 = weather['description']
         icon = weather['icon']
-        uvi = value.get('uvi', 0)
+        uvi = hour_forecast.get('uvi', 0)
         humidity = main .get('humidity', 0)
         try:
-            snow = value['snow']['3h']
+            snow = hour_forecast['snow']['3h']
         except KeyError:
             snow = 0
-        pop = value.get('pop', 0)
-        unix_timestamp = value.get('dt', 0)
-        date = convert_unix_timestamp_to_date_string(unix_timestamp)
-        hour_forecast = HourForecast(temp, clouds, wind_speed, rain, desc_1, desc_2, uvi, humidity, icon, snow, pop, date)
-        forecast[unix_timestamp] = hour_forecast.__dict__
+        pop = hour_forecast.get('pop', 0)
+        unix_timestamp = hour_forecast.get('dt', 0)
+        hour_forecast = SingleForecast(temp, clouds, wind_speed, rain, desc_1, desc_2, uvi, humidity, icon, snow, pop,
+                                       unix_timestamp)
+        forecast.append(hour_forecast)
     return forecast
 
 

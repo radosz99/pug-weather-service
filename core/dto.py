@@ -12,8 +12,8 @@ class ForecastRequest:
     end: str
 
 
-class HourForecast:
-    def __init__(self, temp, clouds, wind_speed, rain, desc_1, desc_2, uvi, humidity, icon, snow, pop, date):
+class SingleForecast:
+    def __init__(self, temp, clouds, wind_speed, rain, desc_1, desc_2, uvi, humidity, icon, snow, pop, unix_timestamp):
         self.icon_url = f"http://openweathermap.org/img/wn/{icon}@2x.png"
         self.temp = float(temp)
         self.clouds = clouds
@@ -25,17 +25,19 @@ class HourForecast:
         self.humidity = float(humidity)
         self.snow = float(snow)
         self.pop = float(pop)
-        self.date = date
+        self.unix_timestamp = unix_timestamp
+
+
+    def __repr__(self):
+        return f"{self.unix_timestamp}, {self.unix_timestamp}, {self.temp}"
 
 
 class Forecast:
-    def __init__(self, forecast, step_in_hours):
-        self.start = utils.convert_unix_timestamp_to_date((next(iter(forecast))))  # get first key from dict
-        self.end = utils.convert_unix_timestamp_to_date(next(reversed(forecast)))  # get last key from dict
-        self.forecast = forecast
+    def __init__(self, single_forecasts, step_in_hours):
+        self.start = utils.convert_unix_timestamp_to_date(single_forecasts[0].unix_timestamp)
+        self.end = utils.convert_unix_timestamp_to_date(single_forecasts[-1].unix_timestamp)
+        self.single_forecasts = single_forecasts
         self.step_in_hours = step_in_hours
-        print(self.start)
-        print(self.end)
 
-    def cut_to_specific_range(self, start, end):
-        pass
+    def __repr__(self):
+        return f"{self.start}-{self.end}, step = {self.step_in_hours}"

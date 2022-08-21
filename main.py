@@ -6,6 +6,7 @@ from core.dto import ForecastRequest
 
 app = FastAPI()
 
+
 origins = [
     "http://localhost",
     "http://localhost:3000",
