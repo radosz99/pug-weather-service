@@ -2,11 +2,9 @@ from functools import wraps
 from time import time, mktime
 from datetime import datetime, timedelta
 import json
-import logging
 
 from .dto import SingleForecast
-
-logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
+from .logger import get_logger
 
 
 def timer(f):
@@ -15,7 +13,7 @@ def timer(f):
         ts = time()
         result = f(*args, **kw)
         te = time()
-        logging.info(f"func: {f.__name__} args:[{args}, {kw}] took: {te-ts} sec")
+        get_logger().info(f"func: {f.__name__} args:[{args}, {kw}] took: {te-ts} sec")
         return result
     return wrap
 

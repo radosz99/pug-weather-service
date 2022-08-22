@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Union
+import traceback
 
 from core.services import weather_api_handler
 from core.dto import ForecastRequest
 from core import constants
+from core.logger import get_logger
 
 app = FastAPI()
 
@@ -32,4 +34,6 @@ def get_weather_for_localization(start: str, end: str, lat: float = 0.0, lon: fl
         response = weather_api_handler.get_weather_for_localization_and_time(weather_request)
         return response
     except Exception as e:
+        tb = traceback.format_exc()
+        get_logger().debug(tb)
         raise HTTPException(status_code=404, detail=str(e))

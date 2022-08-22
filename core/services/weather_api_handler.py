@@ -1,13 +1,12 @@
 from datetime import datetime
 from cachetools import cached, TTLCache
 from requests import get
-import logging
 
 from .. import utils
 from core.constants import CACHE_SIZE, CACHE_ALIVE_TIME, API_KEY, HOURLY_API_URL, THREE_HOURS_API_URL
 import core.exceptions as exc
 from ..dto import Forecast
-
+from ..logger import get_logger
 
 cache = TTLCache(maxsize=CACHE_SIZE, ttl=CACHE_ALIVE_TIME)
 
@@ -15,7 +14,7 @@ cache = TTLCache(maxsize=CACHE_SIZE, ttl=CACHE_ALIVE_TIME)
 def get_weather_for_localization_and_time(forecast_request):
     lat, lon = forecast_request.lat, forecast_request.lon
     start, end = utils.round_unix_timestamps_from_request(forecast_request.start, forecast_request.end)
-    logging.info(f"Looking for forecast withing the range {start} - {end} for latitude = {lat}, longitude = {lon}")
+    get_logger().info(f"Looking for forecast withing the range {start} - {end} for latitude = {lat}, longitude = {lon}")
 
     hourly_forecast = Forecast(get_hourly_forecast_for_localization(lat, lon), 1)
     every_3_hours_forecast = Forecast(get_every_3_hours_forecast_for_localization(lat, lon), 3)
@@ -58,7 +57,7 @@ def get_5_days_forecast_from_api(lat, lon):
 def cut_forecast_to_specific_range(start, end, forecast):
     end_index = len(forecast.single_forecasts) - 1 if forecast.end <= end else find_index_of_last_suitable_single_forecast(end, forecast)
     start_index = 0 if forecast.start >= start else find_index_of_first_suitable_single_forecast(start, forecast)
-    logging.info(f"Forecast = {forecast} cut withing the range - {start} to {end} from index {start_index} "
+    get_logger().info(f"Forecast = {forecast} cut withing the range - {start} to {end} from index {start_index} "
                  f"({forecast.single_forecasts[start_index].unix_timestamp}) to index {end_index} "
                  f"({forecast.single_forecasts[end_index].unix_timestamp})")
     forecast.single_forecasts = forecast.single_forecasts[start_index:end_index + 1]
@@ -70,14 +69,14 @@ def find_index_of_last_suitable_single_forecast(date, forecast):
     difference_in_hours = utils.get_time_difference_in_hours(date, forecast.start)
     quotient, remainder = int(difference_in_hours / forecast.step_in_hours), difference_in_hours % forecast.step_in_hours
     single_forecast_index = quotient + 1 if remainder != 0 else quotient
-    logging.info(f"Difference between date and start of forecast = {difference_in_hours}, next single forecast index = {single_forecast_index}")
+    get_logger().info(f"Difference between date and start of forecast = {difference_in_hours}, next single forecast index = {single_forecast_index}")
     return single_forecast_index
 
 
 def find_index_of_first_suitable_single_forecast(date, forecast):
     difference_in_hours = utils.get_time_difference_in_hours(date, forecast.start)
     single_forecast_index = int(difference_in_hours / forecast.step_in_hours)
-    logging.info(f"Difference between date and start of forecast = {difference_in_hours}, previous single forecast index = {single_forecast_index}")
+    get_logger().info(f"Difference between date and start of forecast = {difference_in_hours}, previous single forecast index = {single_forecast_index}")
     return single_forecast_index
 
 
