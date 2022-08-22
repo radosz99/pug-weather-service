@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware import Middleware
 from typing import Union
 import traceback
 
@@ -8,21 +9,16 @@ from core.dto import ForecastRequest
 from core import constants
 from core.logger import get_logger
 
-app = FastAPI()
 
-
-origins = [
-    "http://localhost",
-    "http://localhost:3000",
-]
-
-app.add_middleware(
+middleware = [Middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)
+)]
+
+app = FastAPI(middleware=middleware)
 
 
 @app.get("/weather")
