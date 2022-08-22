@@ -4,7 +4,7 @@ from requests import get
 import logging
 
 from .. import utils
-from core.constants import CACHE_SIZE, CACHE_ALIVE_TIME, API_KEY, HOURLY_API_URL, THREE_HOURS_API_URL,MAX_STEPS_HOURLY
+from core.constants import CACHE_SIZE, CACHE_ALIVE_TIME, API_KEY, HOURLY_API_URL, THREE_HOURS_API_URL
 import core.exceptions as exc
 from ..dto import Forecast
 
@@ -28,7 +28,8 @@ def get_weather_for_localization_and_time(forecast_request):
 
 
 def check_if_apply_for_hourly(start_date, end_date, hourly_forecast):
-    if utils.get_time_difference_in_hours(start_date, end_date) <= MAX_STEPS_HOURLY and end_date <= hourly_forecast.end:
+    from core.constants import MAX_HOURLY_RANGE
+    if utils.get_time_difference_in_hours(start_date, end_date) <= MAX_HOURLY_RANGE and end_date <= hourly_forecast.end:
         return True
     else:
         return False
@@ -60,7 +61,7 @@ def cut_forecast_to_specific_range(start, end, forecast):
     logging.info(f"Forecast = {forecast} cut withing the range - {start} to {end} from index {start_index} "
                  f"({forecast.single_forecasts[start_index].unix_timestamp}) to index {end_index} "
                  f"({forecast.single_forecasts[end_index].unix_timestamp})")
-    forecast.single_forecasts = forecast.single_forecasts[start_index:end_index + 1 ]
+    forecast.single_forecasts = forecast.single_forecasts[start_index:end_index + 1]
     forecast.start = forecast.single_forecasts[0].unix_timestamp
     forecast.end = forecast.single_forecasts[-1].unix_timestamp
 
