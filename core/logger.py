@@ -8,12 +8,11 @@ logging.basicConfig(filename=logger_name + '-debug.log',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
 
-logging.info("Running Urban Planning")
 
 logger = logging.getLogger(logger_name)
 
 filehandler_dbg = logging.FileHandler(
-   logger_name+ '-debug.log',
+   logger_name + '-debug.log',
    mode='w')
 
 
