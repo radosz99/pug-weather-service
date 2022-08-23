@@ -1,35 +1,22 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware import Middleware
-from typing import Union
-import traceback
+from flask import Flask, request, jsonify, make_response
+import json
 
+from core.exceptions import HttpException
 from core.services import weather_api_handler
-from core.dto import ForecastRequest
-from core import constants
-from core.logger import get_logger
+
+app = Flask(__name__)
 
 
-middleware = [Middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)]
-
-app = FastAPI(middleware=middleware)
+@app.route("/weather", methods=['GET'])
+def get_weather_for_localization():
+    args = request.args.to_dict()
+    forecast = weather_api_handler.get_forecast_for_given_parameters(args)
+    # return forecast.__dict__
+    return jsonify(forecast.to_dict())
 
 
-@app.get("/weather")
-def get_weather_for_localization(start: str, end: str, lat: float = 0.0, lon: float = 0.0, max_range: Union[int, None] = None):
-    weather_request = ForecastRequest(lon=lon, lat=lat, start=start, end=end)
-    if max_range:
-        constants.MAX_HOURLY_RANGE = max_range
-    try:
-        response = weather_api_handler.get_weather_for_localization_and_time(weather_request)
-        return response
-    except Exception as e:
-        tb = traceback.format_exc()
-        get_logger().debug(tb)
-        raise HTTPException(status_code=404, detail=str(e))
+@app.errorhandler(HttpException)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response

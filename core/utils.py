@@ -23,7 +23,8 @@ def convert_unix_timestamp_to_date(unix_timestamp):
         date = int(unix_timestamp)
         return datetime.fromtimestamp(date).replace(second=0)
     except ValueError:
-        raise ValueError(f"Cannot convert {unix_timestamp} to date, invalid format")
+        get_logger().warn(f"Cannot convert {unix_timestamp} to date, invalid format")
+        return datetime.fromtimestamp(0)
 
 
 def convert_date_to_unix_timestamp(date):
@@ -68,17 +69,6 @@ def convert_date_to_date_string(date):
 
 def convert_date_string_to_date(str_date):
     return datetime.strptime(str_date, "%m/%d/%Y, %H:%M")
-
-
-def get_index_of_key_in_dictionary(dic, item):
-    return list(dic.keys()).index(item)
-
-
-def verify_index_in_dictionary(list_to_verify, index):
-    try:
-        _ = list(list_to_verify.items())[index]
-    except IndexError:
-        raise IndexError(f"Index {index} exceeded dictionary length")
 
 
 def get_time_difference_in_hours(date_1, date_2):

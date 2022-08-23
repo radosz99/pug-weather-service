@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from datetime import datetime
+import json
+from json import JSONEncoder
 
 from . import utils
 
@@ -27,9 +28,13 @@ class SingleForecast:
         self.pop = float(pop)
         self.unix_timestamp = unix_timestamp
 
-
-    def __repr__(self):
+    def __str__(self):
         return f"{self.unix_timestamp}, {self.unix_timestamp}, {self.temp}"
+
+    def to_dict(self):
+        return {'icon_url': self.icon_url, 'temp': self.temp, 'clouds': self.clouds, 'wind_speed': self.wind_speed,
+                'rain': self.rain, 'desc_1': self.desc_1, 'desc_2': self.desc_2, 'uvi': self.uvi, 'snow': self.snow,
+                'humidity': self.humidity, 'pop': self.pop, 'unix_timestamp': self.unix_timestamp}
 
 
 class Forecast:
@@ -39,5 +44,15 @@ class Forecast:
         self.single_forecasts = single_forecasts
         self.step_in_hours = step_in_hours
 
+    def to_json(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+                          sort_keys=True, indent=4)
+
     def __repr__(self):
         return f"{self.start}-{self.end}, step = {self.step_in_hours}"
+
+    def to_dict(self):
+        return {'start': self.start, "end": self.end, "step_in_hours": self.step_in_hours, "single_forecasts":
+            [single_forecast.to_dict() for single_forecast in self.single_forecasts]}
+
+
