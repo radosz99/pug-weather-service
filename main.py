@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/api/v1/forecast", methods=['GET'])
+@app.route("/v1/forecast", methods=['GET'])
 def get_weather_for_localization():
     args = request.args.to_dict()
     forecast = weather_api_handler.get_forecast_for_given_parameters(args)
