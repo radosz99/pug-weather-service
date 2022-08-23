@@ -20,13 +20,13 @@ $ poetry install
 By activating virtualenv:
 ```
 $ poetry shell
-$ uvicorn main:app
+$ gunicorn main:app
  
 ```
 
 Or via `poetry run`:
 ```
-$ poetry run uvicorn main:app
+$ poetry run gunicorn main:app
 ```
 Or via Docker:
 ```
