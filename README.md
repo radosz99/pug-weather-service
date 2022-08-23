@@ -13,6 +13,10 @@ Install Python dependencies via poetry:
 ```
 $ poetry install
 ```
+After pulling new repository you can update packages viay:
+```
+$ poetry update
+```
 
 
 # Run
