@@ -1,10 +1,11 @@
-from flask import Flask, request, jsonify, make_response
-import json
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 from core.exceptions import HttpException
 from core.services import weather_api_handler
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route("/weather", methods=['GET'])
