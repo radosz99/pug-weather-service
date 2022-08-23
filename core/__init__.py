@@ -1,6 +1,6 @@
 import os
-import logger
 
+from . import logger
 from .constants import API_RESPONSES_DIR
 
 try:
