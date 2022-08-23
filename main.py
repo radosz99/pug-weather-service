@@ -12,8 +12,11 @@ CORS(app)
 def get_weather_for_localization():
     args = request.args.to_dict()
     forecast = weather_api_handler.get_forecast_for_given_parameters(args)
-    # return forecast.__dict__
-    return jsonify(forecast.to_dict())
+    response = jsonify(forecast.to_dict())
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add("Access-Control-Allow-Headers", '*')
+    response.headers.add("Access-Control-Allow-Methods", '*')
+    return response
 
 
 @app.errorhandler(HttpException)
