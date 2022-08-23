@@ -5,11 +5,10 @@ from core.exceptions import HttpException
 from core.services import weather_api_handler
 
 app = Flask(__name__)
-app.config['SERVER_NAME'] = 'matcher.pl'
 CORS(app)
 
 
-@app.route("/weather", methods=['GET'], subdomain="api")
+@app.route("/api/weather", methods=['GET'])
 def get_weather_for_localization():
     args = request.args.to_dict()
     forecast = weather_api_handler.get_forecast_for_given_parameters(args)
@@ -18,6 +17,7 @@ def get_weather_for_localization():
     response.headers.add("Access-Control-Allow-Headers", '*')
     response.headers.add("Access-Control-Allow-Methods", '*')
     return response
+
 
 @app.errorhandler(HttpException)
 def handle_invalid_usage(error):
