@@ -1,3 +1,14 @@
+# Info
+Python application for getting weather for specific coordinates and time.
+
+https://api.matcher.pl/v1/forecast?lat=51&lon=17&start=1663912800&end=1663941600  
+
+Query parameters:
+- `lat` - latitude of the place,
+- `lon` - longitude of the place,
+- `start` - start time of the forecast in unix timestamp,
+- `end` - end time of the forecast in unix timestamp,
+
 # Install
 Clone repository:
 
